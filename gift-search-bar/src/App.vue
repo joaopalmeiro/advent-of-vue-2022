@@ -31,7 +31,7 @@ const findProducts = debounce(async term => {
     products.value = data.products
   } catch (error) {
     console.error(error)
-    alert('Something went wrong!')
+    alert('There is a problem fetching the data!')
   } finally {
     isLoading.value = false
   }
@@ -56,6 +56,8 @@ watch(searchTerm, newTerm => findProducts(newTerm))
     />
     <p v-if="isLoading" class="text-lg text-center">Loading…</p>
     <!-- https://tailwindcss.com/docs/list-style-type -->
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl -->
+    <!-- https://vuejs.org/guide/essentials/list.html#v-for-on-template -->
     <ul v-else-if="!isLoading && products.length > 0" class="list-disc">
       <li v-for="product in products" :key="product.id">{{ product.title }} - ${{ product.price }}</li>
     </ul>
