@@ -12,7 +12,30 @@ const searchTerm = ref('')
 const isLoading = ref(false)
 const products = ref([])
 
-const findProducts = async term => {}
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
+// Debouncing: a technique to delay a function's execution until
+// a specific amount of time has elapsed since the last call.
+// https://dmitripavlutin.com/javascript-fetch-async-await/#2-fetching-json
+// https://developer.mozilla.org/en-US/docs/Web/API/Response/json#return_value
+const findProducts = debounce(async term => {
+  try {
+    // Clear
+    if (term.length === 0) return (products.value = [])
+
+    isLoading.value = true
+
+    const response = await fetch(`https://dummyjson.com/products/search?q=${term}&limit=5`)
+    const data = await response.json()
+    // console.log(data)
+
+    products.value = data.products
+  } catch (error) {
+    console.error(error)
+    alert('Something went wrong!')
+  } finally {
+    isLoading.value = false
+  }
+}, 300)
 
 // https://vuejs.org/api/reactivity-core.html#watch
 // "Watches one or more reactive data sources and
@@ -24,9 +47,17 @@ watch(searchTerm, newTerm => findProducts(newTerm))
   <div class="w-full h-full flex flex-col gap-5 justify-center items-center">
     <h1 class="text-4xl font-bold">Gift Search Bar</h1>
     <!-- https://vuejs.org/guide/essentials/forms.html -->
-    <input type="text" class="p-2 border-2 border-gray-dark" v-model="searchTerm" placeholder="Start typing..." />
-    <ul class="list-disc">
-      <li>Display suggestions here</li>
+    <input
+      type="text"
+      class="p-2 border-2 border-gray-dark"
+      v-model="searchTerm"
+      placeholder="Start typing..."
+      :disabled="isLoading"
+    />
+    <p v-if="isLoading" class="text-lg text-center">Loading…</p>
+    <!-- https://tailwindcss.com/docs/list-style-type -->
+    <ul v-else-if="!loading && products.length > 0" class="list-disc">
+      <li v-for="product in products" :key="product.id">{{ product.title }} - ${{ product.price }}</li>
     </ul>
   </div>
 </template>
