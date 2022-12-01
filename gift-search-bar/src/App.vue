@@ -49,14 +49,14 @@ watch(searchTerm, newTerm => findProducts(newTerm))
     <!-- https://vuejs.org/guide/essentials/forms.html -->
     <input
       type="text"
-      class="p-2 border-2 border-gray-dark"
+      class="p-2 border-2 border-gray-dark disabled:opacity-40"
       v-model="searchTerm"
       placeholder="Start typing..."
       :disabled="isLoading"
     />
     <p v-if="isLoading" class="text-lg text-center">Loading…</p>
     <!-- https://tailwindcss.com/docs/list-style-type -->
-    <ul v-else-if="!loading && products.length > 0" class="list-disc">
+    <ul v-else-if="!isLoading && products.length > 0" class="list-disc">
       <li v-for="product in products" :key="product.id">{{ product.title }} - ${{ product.price }}</li>
     </ul>
   </div>
